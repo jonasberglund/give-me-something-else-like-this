@@ -1,21 +1,21 @@
 {
   "modules" : {
     "normalize"            : true,
-    "print"                : false,
-    "glyphicons"           : false,
+    "print"                : true,
+    "glyphicons"           : true,
 
-    "scaffolding"          : false,
+    "scaffolding"          : true,
     "type"                 : false,
     "code"                 : false,
-    "grid"                 : false,
+    "grid"                 : true,
     "tables"               : false,
-    "forms"                : false,
-    "buttons"              : false,
+    "forms"                : true,
+    "buttons"              : true,
 
     "component-animations" : false,
     "dropdowns"            : false,
-    "button-groups"        : false,
-    "input-groups"         : false,
+    "button-groups"        : true,
+    "input-groups"         : true,
     "navs"                 : false,
     "navbar"               : false,
     "breadcrumbs"          : false,
@@ -42,7 +42,7 @@
 
     "affix"                : false,
     "alert"                : false,
-    "button"               : false,
+    "button"               : true,
     "collapse"             : false,
     "scrollspy"            : false,
     "tab"                  : false,

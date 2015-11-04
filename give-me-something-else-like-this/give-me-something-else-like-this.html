@@ -3,12 +3,20 @@
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
 
-  {{> hello}}
+  <h1>Give me something else like this</h1>
+  <div class="row search">
+    <div class="col-sm-4 col-sm-offset-4">
+      {{> search}}
+    </div>
+  </div>
 </body>
 
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+<template name="search">
+  <div class="input-group">
+      <input type="text" class="form-control" placeholder="Search for a song...">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button">Go!</button>
+      </span>
+    </div><!-- /input-group -->
 </template>
