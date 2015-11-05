@@ -14,9 +14,14 @@
 
 <template name="search">
   <div class="input-group">
-      <input type="text" class="form-control" placeholder="Search for a song...">
+      <input name="song-query" type="text" class="form-control" placeholder="Search for a song...">
       <span class="input-group-btn">
         <button class="btn btn-default" type="button">Go!</button>
       </span>
     </div><!-- /input-group -->
+    {{#each searchResult}}
+      <div>
+        <h2>{{artist}} - {{title}}</h2>
+      </div>
+    {{/each}}
 </template>
