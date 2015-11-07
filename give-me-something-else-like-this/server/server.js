@@ -1,6 +1,6 @@
 Meteor.methods({
   fetchSongs: function(query) {
-    var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=LJ8HVOMGHXJHV45NG&title=" + query, {
+    var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=LJ8HVOMGHXJHV45NG&combined=" + query, {
          headers: {
              Accept: "application/json"
          }

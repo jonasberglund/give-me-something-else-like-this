@@ -7,10 +7,12 @@ if (Meteor.isClient) {
   });
 
   Template.search.events({
-    'input [name="song-query"]': function (e) {
-      e.preventDefault();
+    //'input [name="song-query"]': function (e) {
+    //'click #search-button': function (e) {
+    'submit .input-group': function (event) {
+      event.preventDefault();
 
-      var query = $(e.currentTarget).val();
+      var query = document.getElementById('song-query').value;
 
       console.log('Search: ' + query);
       if(query.length == 0) return;
