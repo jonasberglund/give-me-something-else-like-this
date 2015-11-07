@@ -1,14 +1,11 @@
-if (Meteor.isClient) {
+
   Template.search.helpers({
     searchResult: function () {
-      console.log(';akdjhakjsdhakjsdh');
       return Session.get('searchResult');
     }
   });
 
   Template.search.events({
-    //'input [name="song-query"]': function (e) {
-    //'click #search-button': function (e) {
     'submit .input-group': function (event) {
       event.preventDefault();
 
@@ -22,14 +19,20 @@ if (Meteor.isClient) {
           return console.log(err);
         }
 
-        console.log(result.data.response.songs[0].title);
+        console.log(result.data.response);
+        var song = result.data.response.songs[0];
+
+        var summary_map = []
+        for (cat in song.audio_summary) {
+          summary_map.push({key: cat, value: song.audio_summary[cat]})
+        }
 
         Session.set('searchResult', [{
-          artist: result.data.response.songs[0].artist_name,
-          title: result.data.response.songs[0].title
+          artist: song.artist_name,
+          title: song.title,
+          summary: summary_map
         }]);
 
       });
      }
   });
-}

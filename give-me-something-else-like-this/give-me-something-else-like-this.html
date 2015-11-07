@@ -22,6 +22,9 @@
   {{#each searchResult}}
     <div>
       <h2>{{artist}} - {{title}}</h2>
+      {{#each summary}}
+        <p>{{key}} {{value}}</p>
+      {{/each}}
     </div>
   {{/each}}
 </template>
