@@ -9,5 +9,8 @@ Meteor.methods({
          }
     });
     return result;
+  },
+  findSimilarSong: function(summary_map) {
+    console.log(summary_map);
   }
 });
