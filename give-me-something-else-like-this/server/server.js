@@ -39,15 +39,31 @@ Meteor.methods({
 
     var e = 0.1;
 
-    // Try to find a song with matching tempo
+    // Try to find a song with matching energy
+    var max_energy = energy + e;
+    var min_energy = energy - e;
+    console.log("max: " + max_energy + "min: " + min_energy);
+
+    var max_liveness = liveness + e;
+    var min_liveness = liveness -e;
+    console.log("max: " + max_liveness + "min: " + min_liveness);
+
+    // Temp
     var max_tempo = tempo + e;
     var min_tempo = tempo - e;
     console.log("max: " + max_tempo + "min: " + min_tempo);
 
-    // Energy
-    var max_energy = energy + e;
-    var min_energy = energy - e;
-    console.log("max: " + max_energy + "min: " + min_energy);
+    var max_speechiness = speechiness;
+    var min_speechiness = speechiness;
+
+    var max_acousticness = acousticness + e;
+    var min_acousticness = acousticness;
+
+    var max_loudness = loudness + e;
+    var min_loudness = loudness;
+
+    var max_danceability = danceability + e;
+    var min_danceability = danceability;
 
     // API call
     var api_key = "LJ8HVOMGHXJHV45NG";
@@ -55,20 +71,36 @@ Meteor.methods({
     var bucket_id = "7digital-US&bucket";
     var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=" + api_key + "&results=" + results + "&bucket=id:" + bucket_id + "=audio_summary&bucket=tracks", {
         params: {
-          max_tempo: max_tempo,
-          min_tempo:  min_tempo,
           max_energy: max_energy,
-          min_energy:  min_energy
+          min_energy: min_energy,
+          max_liveness: max_liveness,
+          min_liveness: min_liveness,
+          max_tempo: max_tempo,
+          min_tempo: min_tempo,
+          max_speechiness: max_speechiness,
+          min_speechiness: min_speechiness,
+          max_acousticness: max_acousticness,
+          min_acousticness: min_acousticness,
+          max_loudness: max_loudness,
+          min_loudness: min_loudness,
+          max_danceability: max_danceability,
+          min_danceability: min_danceability
         },
         headers: {
            Accept: "application/json"
         }
     });
-    
-    console.log(result.data.response.songs[0].title);
-    console.log(result.data.response.songs[0].artist_name);
-    console.log(result.data.response.songs[0].audio_summary.tempo);
-    console.log(result.data.response.songs[0].audio_summary.energy);
+
+    if (result.data.response.songs[0]) {
+      console.log(result.data.response.songs[0].title);
+      console.log(result.data.response.songs[0].artist_name);
+      console.log(result.data.response.songs[0].audio_summary.tempo);
+      console.log(result.data.response.songs[0].audio_summary.energy);
+    } else {
+      console.log("no results found!");
+    }
+
+
     return result;
 
   }
