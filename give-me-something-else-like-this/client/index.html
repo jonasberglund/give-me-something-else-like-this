@@ -3,29 +3,45 @@
 </head>
 
 <body>
-
   <h1>Give me something else like this</h1>
-  <div class="row search">
-    <div class="col-sm-4 col-sm-offset-4">
-      {{> search}}
-    </div>
-  </div>
+  {{> search}}
 </body>
 
 <template name="search">
-  <form class="input-group">
-    <input id="song-query" type="text" class="form-control" placeholder="Search for a song...">
-    <span class="input-group-btn">
-      <button class="btn btn-default" type="submit">Go!</button>
-    </span>
-  </form><!-- /input-group -->
-  {{#each searchResult}}
-    <div>
-      <h2>{{artist}} - {{title}}</h2>
-      {{#each summary}}
-        <p>{{key}} {{value}}</p>
+  <div class="row">
+    <div class="col-sm-4 col-sm-offset-4">
+      <form class="input-group">
+        <input id="song-query" type="text" class="form-control" placeholder="Search for a song...">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">Go!</button>
+        </span>
+      </form><!-- /input-group -->
+    </div>
+    <div class="col-sm-4 col-sm-offset-3">
+      {{#each searchResult}}
+        <div>
+          <h2>{{artist}} - {{title}}</h2>
+          <img src="{{extras.release_image}}">
+          <p>{{extras.preview_url}}</p>
+          {{#each summary}}
+            <p>{{key}} {{value}}</p>
+          {{/each}}
+        </div>
+        <button id="find-similar-song" class="btn btn-default">Find similar song!</button>
       {{/each}}
     </div>
-    <button id="find-similar-song" class="btn btn-default">Find similar song!</button>
-  {{/each}}
+    <div class="col-sm-4">
+      {{#each similarResult}}
+        <div>
+          {{error}}
+          <h2>{{artist}} - {{title}}</h2>
+          <img src="{{extras.release_image}}">
+          <p>{{extras.preview_url}}</p>
+          {{#each summary}}
+            <p>{{key}} {{value}}</p>
+          {{/each}}
+        </div>
+      {{/each}}
+    </div>
+  </div>
 </template>

@@ -1,9 +1,12 @@
+var api_key = "LJ8HVOMGHXJHV45NG";
+var bucket_id = "7digital-US&bucket";
+
 Meteor.methods({
   fetchSongs: function(query) {
-    var api_key = "LJ8HVOMGHXJHV45NG";
-    var results = 1;
-    var bucket_id = "7digital-US&bucket";
-    var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=" + api_key + "&results=" + results + "&combined=" + query + "&bucket=id:" + bucket_id + "=audio_summary&bucket=tracks", {
+    var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=" + api_key + "&combined=" + query + "&bucket=id:" + bucket_id + "=audio_summary&bucket=tracks", {
+        params: {
+          results: 1
+        },
          headers: {
              Accept: "application/json"
          }
@@ -11,16 +14,16 @@ Meteor.methods({
     return result;
   },
   findSimilarSong: function(summary_map) {
-    var key;
-    var energy;
-    var liveness;
-    var tempo;
-    var speechiness;
-    var acousticness;
+    var key;                // (c, c-sharp, d, e-flat, e, f, f-sharp, g, a-flat, a, b-flat, b) 0 - 11
+    var energy;             // 0.0 < energy < 1.0
+    var liveness;           // 0.0 < liveness < 1.0
+    var tempo;              // 0.0 < tempo < 500.0 (BPM)
+    var speechiness;        // 0.0 < speechiness < 1.0
+    var acousticness;       // 0.0 < acousticness < 1.0
     var instrumentalness;
-    var loudness;
+    var loudness;           // -100.0 < loudness < 100.0 (dB)
     var valence;
-    var danceability;
+    var danceability;       // 0.0 < danceability < 1.0
 
     // Create varibles from object values
     for (var index in summary_map) {
@@ -37,40 +40,46 @@ Meteor.methods({
       else if (obj['key'] == 'danceability') { danceability = obj['value']; }
     }
 
-    var e = 0.1;
+    var e = 0.2;
 
-    // Try to find a song with matching energy
-    var max_energy = energy + e;
-    var min_energy = energy - e;
-    console.log("max: " + max_energy + "min: " + min_energy);
+    // 0.0 < energy < 1.0
+    var max_energy = energy + e < 1 ? energy + e : 1;
+    var min_energy = energy - e > 0 ? energy - e : 0;
+    console.log("energy max: " + max_energy + " min: " + min_energy);
 
-    var max_liveness = liveness + e;
-    var min_liveness = liveness -e;
-    console.log("max: " + max_liveness + "min: " + min_liveness);
+    // 0.0 < liveness < 1.0
+    var max_liveness = liveness + e < 1 ? liveness + e : 1;
+    var min_liveness = liveness - e > 0 ? liveness - e : 0;
+    console.log("liveness max: " + max_liveness + " min: " + min_liveness);
 
-    // Temp
-    var max_tempo = tempo + e;
-    var min_tempo = tempo - e;
-    console.log("max: " + max_tempo + "min: " + min_tempo);
+    // 0.0 < tempo < 500.0 (BPM)
+    var e_tempo = e * 100;
+    var max_tempo = tempo + e_tempo < 500 ? tempo + e_tempo : 500;
+    var min_tempo = tempo - e_tempo > 0 ? tempo - e_tempo : 0;
+    console.log("tempo max: " + max_tempo + " min: " + min_tempo);
 
-    var max_speechiness = speechiness;
-    var min_speechiness = speechiness;
+    // 0.0 < speechiness < 1.0
+    var max_speechiness = speechiness + e < 1 ? speechiness + e : 1;
+    var min_speechiness = speechiness - e > 0 ? speechiness - e : 0;
 
-    var max_acousticness = acousticness + e;
-    var min_acousticness = acousticness;
+    // 0.0 < acousticness < 1.0
+    var max_acousticness = acousticness + e < 1 ? acousticness + e : 1;
+    var min_acousticness = acousticness - e > 0 ? acousticness - e : 0;
 
-    var max_loudness = loudness + e;
-    var min_loudness = loudness;
+    // -100.0 < loudness < 100.0 (dB)
+    var e_loudness = e * 50;
+    var max_loudness = loudness + e_loudness < 100 ? loudness + e_loudness : 100;
+    var min_loudness = loudness - e_loudness > 0 ? loudness - e_loudness : 0;
+    console.log("loudness max: " + max_loudness + " min: " + min_loudness);
 
-    var max_danceability = danceability + e;
-    var min_danceability = danceability;
+    // 0.0 < danceability < 1.0
+    var max_danceability = danceability + e < 1 ? danceability + e : 1;
+    var min_danceability = danceability - e > 0 ? danceability - e : 0;
 
     // API call
-    var api_key = "LJ8HVOMGHXJHV45NG";
-    var results = 1;
-    var bucket_id = "7digital-US&bucket";
-    var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=" + api_key + "&results=" + results + "&bucket=id:" + bucket_id + "=audio_summary&bucket=tracks", {
+    var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=" + api_key + "&bucket=id:" + bucket_id + "=audio_summary&bucket=tracks", {
         params: {
+          results: 1,
           max_energy: max_energy,
           min_energy: min_energy,
           max_liveness: max_liveness,
@@ -94,10 +103,13 @@ Meteor.methods({
     if (result.data.response.songs[0]) {
       console.log(result.data.response.songs[0].title);
       console.log(result.data.response.songs[0].artist_name);
-      console.log(result.data.response.songs[0].audio_summary.tempo);
-      console.log(result.data.response.songs[0].audio_summary.energy);
+      console.log("tempo: " + result.data.response.songs[0].audio_summary.tempo);
+      console.log("energy: " + result.data.response.songs[0].audio_summary.energy);
+      console.log("liveness: " + result.data.response.songs[0].audio_summary.liveness);
+      console.log("loudness: " + result.data.response.songs[0].audio_summary.loudness);
     } else {
-      console.log("no results found!");
+      console.log("No results found!");
+      return null;
     }
 
 
