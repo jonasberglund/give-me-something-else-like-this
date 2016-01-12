@@ -12,6 +12,7 @@
     <div class="col-sm-4 col-sm-offset-4">
       <form class="input-group">
         <input id="song-query" type="text" class="form-control" placeholder="Search for a song...">
+        <input id="artist-query" type="text" class="form-control" placeholder="Search for a artist...">
         <span class="input-group-btn">
           <button class="btn btn-default" type="submit">Go!</button>
         </span>
@@ -36,7 +37,7 @@
           {{error}}
           <h2>{{artist}} - {{title}}</h2>
           <img src="{{extras.release_image}}">
-          <p>{{extras.preview_url}}</p>
+          <!-- <p>{{extras.preview_url}}</p> -->
           {{#each summary}}
             <p>{{key}} {{value}}</p>
           {{/each}}

@@ -14,12 +14,13 @@ Template.search.events({
     event.preventDefault();
 
     // Get value from input field
-    var query = document.getElementById('song-query').value;
+    var song_query = document.getElementById('song-query').value;
+    var artist_query = document.getElementById('artist-query').value;
 
-    if(query.length == 0) return;
+    if(song_query.length == 0 || artist_query.length == 0) return;
 
     // Call server method with search query
-    Meteor.call('fetchSongs', query, function(err, result){
+    Meteor.call('fetchSongs', song_query, artist_query, function(err, result){
       if(err){
         return console.log(err);
       }
