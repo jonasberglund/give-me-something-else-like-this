@@ -5,7 +5,7 @@ Meteor.methods({
   fetchSongs: function(song_query, artist_query) {
     var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=" + api_key + "&title=" + song_query + "&artist=" + artist_query + "&bucket=id:" + bucket_id + "=audio_summary&bucket=tracks", {
         params: {
-          results: 5
+          results: 1
         },
          headers: {
              Accept: "application/json"
@@ -40,7 +40,7 @@ Meteor.methods({
       else if (obj['key'] == 'danceability') { danceability = obj['value']; }
     }
 
-    var e = 0.01;
+    var e = 0.2;
     var max_energy;
     var min_energy;
     var max_liveness;
@@ -51,6 +51,8 @@ Meteor.methods({
     var min_speechiness;
     var max_acousticness;
     var min_acousticness;
+    var min_valence;
+    var max_valence;
     var max_loudness;
     var min_loudness;
     var max_danceability;
@@ -58,47 +60,62 @@ Meteor.methods({
 
     function updateSearchCriterias(){
 
-      // 0.0 < energy < 1.0
-      max_energy = energy + e < 1 ? energy + e : 1;
-      min_energy = energy - e > 0 ? energy - e : 0;
-      console.log("energy max: " + max_energy + " min: " + min_energy);
-
-      // 0.0 < liveness < 1.0
-      max_liveness = liveness + e < 1 ? liveness + e : 1;
-      min_liveness = liveness - e > 0 ? liveness - e : 0;
-      //console.log("liveness max: " + max_liveness + " min: " + min_liveness);
-
-      // 0.0 < tempo < 500.0 (BPM)
-      var e_tempo = e * 100;
-      max_tempo = tempo + e_tempo < 500 ? tempo + e_tempo : 500;
-      min_tempo = tempo - e_tempo > 0 ? tempo - e_tempo : 0;
-      console.log("tempo max: " + max_tempo + " min: " + min_tempo);
 
       // 0.0 < speechiness < 1.0
-      max_speechiness = speechiness + e < 1 ? speechiness + e : 1;
-      min_speechiness = speechiness - e > 0 ? speechiness - e : 0;
-
-      // 0.0 < acousticness < 1.0
-      max_acousticness = acousticness + e < 1 ? acousticness + e : 1;
-      min_acousticness = acousticness - e > 0 ? acousticness - e : 0;
-
-      // -100.0 < loudness < 100.0 (dB)
-      var e_loudness = e * 50;
-      max_loudness = loudness + e_loudness < 100 ? loudness + e_loudness : 100;
-      min_loudness = loudness - e_loudness > 0 ? loudness - e_loudness : 0;
-      //console.log("loudness max: " + max_loudness + " min: " + min_loudness);
+      var e_s = e * 0.0136;
+      max_speechiness = speechiness + e_s < 1 ? speechiness + e_s : 1;
+      min_speechiness = speechiness - e_s > 0 ? speechiness - e_s : 0;
+      console.log("max_speechiness: " + max_speechiness + " min: " + min_speechiness);
 
       // 0.0 < danceability < 1.0
-      max_danceability = danceability + e < 1 ? danceability + e : 1;
-      min_danceability = danceability - e > 0 ? danceability - e : 0;
+      var e_d = e * 0.0566;
+      max_danceability = danceability + e_d < 1 ? danceability + e_d : 1;
+      min_danceability = danceability - e_d > 0 ? danceability - e_d : 0;
+      console.log("max_danceability: " + max_danceability + " min: " + min_danceability);
+
+      // 0.0 < liveness < 1.0
+      var e_l = e * 0.1581;
+      max_liveness = liveness + e_l < 1 ? liveness + e_l : 1;
+      min_liveness = liveness - e_l > 0 ? liveness - e_l : 0;
+      console.log("liveness max: " + max_liveness + " min: " + min_liveness);
+
+      var e_e = e * 0.1585;
+      // 0.0 < energy < 1.0
+      max_energy = energy + e_e < 1 ? energy + e_e : 1;
+      min_energy = energy - e_e > 0 ? energy - e_e : 0;
+      console.log("energy max: " + max_energy + " min: " + min_energy);
+
+      // 0.0 < acousticness < 1.0
+      var e_a = e * 0.2606;
+      max_acousticness = acousticness + e_a < 1 ? acousticness + e_a : 1;
+      min_acousticness = acousticness - e_a > 0 ? acousticness - e_a : 0;
+      console.log("max_acousticness: " + max_acousticness + " min: " + min_acousticness);
+
+      // 0.0 < valence < 1.0
+      var e_v = e * 0.2606;
+      max_valence = valence + e_v < 1 ? valence + e_v : 1;
+      min_valence = valence - e_v > 0 ? valence - e_v : 0;
+      console.log("max_valence: " + max_valence + " min: " + min_valence);
+
+      // -100.0 < loudness < 100.0 (dB)
+      var e_l = e * 3.7287;
+      max_loudness = loudness + e_l < 100 ? loudness + e_l : 100;
+      min_loudness = loudness - e_l > -100 ? loudness - e_l : -100;
+      console.log("loudness max: " + max_loudness + " min: " + min_loudness);
+
+      // 0.0 < tempo < 500.0 (BPM)
+      var e_t = e * 11.3013;
+      max_tempo = tempo + e_t < 500 ? tempo + e_t : 500;
+      min_tempo = tempo - e_t > 0 ? tempo - e_t : 0;
+      console.log("tempo max: " + max_tempo + " min: " + min_tempo);
 
     }
 
     // API call
-    function apiCall(max_energy, min_energy, max_liveness, min_liveness, max_tempo, min_tempo, max_speechiness, min_speechiness, max_acousticness, min_acousticness, max_loudness, min_loudness, max_danceability, min_danceability){
+    function apiCall(){
       var result = HTTP.get("http://developer.echonest.com/api/v4/song/search?api_key=" + api_key + "&bucket=id:" + bucket_id + "=audio_summary&bucket=tracks", {
           params: {
-            results: 1,
+            results: 100,
             max_energy: max_energy,
             min_energy: min_energy,
             max_liveness: max_liveness,
@@ -109,6 +126,8 @@ Meteor.methods({
             min_speechiness: min_speechiness,
             max_acousticness: max_acousticness,
             min_acousticness: min_acousticness,
+            max_valence: max_valence,
+            min_valence: min_valence,
             max_loudness: max_loudness,
             min_loudness: min_loudness,
             max_danceability: max_danceability,
@@ -123,13 +142,17 @@ Meteor.methods({
     }
 
     updateSearchCriterias();
-    var result = apiCall(max_energy, min_energy, max_liveness, min_liveness, max_tempo, min_tempo, max_speechiness, min_speechiness, max_acousticness, min_acousticness, max_loudness, min_loudness, max_danceability, min_danceability);
+    var result = apiCall();
 
-    while(!result.data.response.songs[0]){
+    // we want at least two results
+    while(!result.data.response.songs[1]){
       console.log("No results found!");
-      e = e + 0.05;
+      if (result.data.response.songs[0]) {
+        console.log(result.data.response.songs[0].title);
+      }
+      e = e + 0.1;
       updateSearchCriterias();
-      var result = apiCall(max_energy, min_energy, max_liveness, min_liveness, max_tempo, min_tempo, max_speechiness, min_speechiness, max_acousticness, min_acousticness, max_loudness, min_loudness, max_danceability, min_danceability);
+      var result = apiCall();
     }
 
     if (result.data.response.songs[0]) {

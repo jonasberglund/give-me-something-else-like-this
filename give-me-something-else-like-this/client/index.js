@@ -1,4 +1,5 @@
 var summary_map;
+var original_song;
 
 Template.search.helpers({
   searchResult: function () {
@@ -28,10 +29,12 @@ Template.search.events({
       // Takes first song from result
       var song = result.data.response.songs[0];
 
+      original_song = song;
+
       // Create an array with all information about the song
       summary_map = []
       for (cat in song.audio_summary) {
-        if (cat !== "analysis_url" && cat !== "instrumentalness" && cat !== "mode" && cat !== "time_signature" && cat !== "audio_md5") {
+        if (cat !== "analysis_url" && cat !== "instrumentalness" && cat !== "mode" && cat !== "time_signature" && cat !== "audio_md5" && cat !== "duration" && cat !== "key") {
           summary_map.push({key: cat, value: song.audio_summary[cat]})
         }
       }
@@ -66,13 +69,33 @@ Template.search.events({
         return console.log("No result found!");
       }
 
-      // Takes first song from result
-      var song = result.data.response.songs[0];
+
+      function checkSimilarity(songs){
+        var best_song_index = 0;
+        var lowest_diff = 1;
+        for (var i = 0; i < songs.length; i++) {
+          var song = songs[i];
+          if (song.title !== original_song.title){
+            var this_speechiness = song.audio_summary.valence;
+            var original_speechiness = original_song.audio_summary.valence;
+            var diff = Math.abs(original_speechiness - this_speechiness)
+            if (diff < lowest_diff){
+              lowest_diff = diff;
+              best_song_index = i;
+            }
+          }
+        }
+        return best_song_index;
+      }
+
+      // Takes best song from result
+      var best_index = checkSimilarity(result.data.response.songs);
+      var song = result.data.response.songs[best_index];
 
       // Create an array with all information about the song
       var summary_map_result = []
       for (cat in song.audio_summary) {
-        if (cat !== "analysis_url" && cat !== "instrumentalness" && cat !== "mode" && cat !== "time_signature" && cat !== "audio_md5") {
+        if (cat !== "analysis_url" && cat !== "instrumentalness" && cat !== "mode" && cat !== "time_signature" && cat !== "audio_md5" && cat !== "duration" && cat !== "key") {
           summary_map_result.push({key: cat, value: song.audio_summary[cat]})
         }
       }
